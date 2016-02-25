@@ -1,5 +1,6 @@
 import $    from 'jquery';
 import RSVP from 'rsvp';
+import AudioVolume from './audio-volume';
 
 function delegateTo$el(method) {
   return function() {
@@ -10,18 +11,25 @@ function delegateTo$el(method) {
 function AudioSource(options = {}) {
   var { src, preload, playResolvesOn } = options;
   this._audioElement         = new Audio();
+  this._volume               = new AudioVolume(this._audioElement);
   this._audioElement.preload = preload || 'metadata';
   this._audioElement.src     = src || '';
   this._$audioElement        = $(this._audioElement);
-  if(playResolvesOn) {
-    this.playResolvesOn = playResolvesOn;
-  }
+  this.playResolvesOn        = playResolvesOn || this.playResolvesOn;
 }
 
 AudioSource.prototype = {
 
   playResolvesOn: 'playing',
   loadResolvesOn: 'canplaythrough',
+
+  get volume() {
+    return this._volume;
+  },
+
+  set volume(val) {
+    return this._volume.level = val;
+  },
 
   get src() {
     return this._audioElement.src;
@@ -33,6 +41,10 @@ AudioSource.prototype = {
 
   get isPaused() {
     return this._audioElement.paused;
+  },
+
+  get isMuted() {
+    return this.volume.isMuted;
   },
 
   get buffered() {
@@ -92,6 +104,9 @@ AudioSource.prototype = {
     this._audioElement.load();
     return loadPromise;
   },
+
+  speedUp(value)    {},
+  slowDownUp(value) {},
 
   on:      delegateTo$el('on'),
   one:     delegateTo$el('one'),

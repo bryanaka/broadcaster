@@ -1,5 +1,14 @@
 /* jshint node: true */
 
+const TEST_TAGS = {};
+const TEXT_TAG_PREFIX = /^TEST_/;
+
+for(var tag in process.env) {
+  if( !TEXT_TAG_PREFIX.test(tag) ) { continue; }
+  var tagName = tag.replace(TEXT_TAG_PREFIX, '');
+  TEST_TAGS[tagName] = process.env[tag];
+}
+
 module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'broadcaster',
@@ -12,6 +21,8 @@ module.exports = function(environment) {
         // e.g. 'with-controller': true
       }
     },
+
+    TEST_TAGS: TEST_TAGS,
 
     APP: {
       // Here you can pass flags/options to your application instance

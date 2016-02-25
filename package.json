@@ -9,8 +9,8 @@
   },
   "scripts": {
     "build": "ember build",
-    "start": "ember server",
-    "test": "ember test"
+    "start": "TEST_AUDIO=true ember server",
+    "test":  "TEST_AUDIO=false ember test"
   },
   "repository": "",
   "engines": {

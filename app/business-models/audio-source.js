@@ -4,15 +4,18 @@ import RSVP from 'rsvp';
 function delegateTo$el(method) {
   return function() {
     return this._$audioElement[method](...arguments);
-  }
-};
+  };
+}
 
 function AudioSource(options = {}) {
   var { src, preload, playResolvesOn } = options;
   this._audioElement         = new Audio();
-  this._audioElement.preload = preload || 'none';
+  this._audioElement.preload = preload || 'metadata';
   this._audioElement.src     = src || '';
   this._$audioElement        = $(this._audioElement);
+  if(playResolvesOn) {
+    this.playResolvesOn = playResolvesOn;
+  }
 }
 
 AudioSource.prototype = {
@@ -30,10 +33,6 @@ AudioSource.prototype = {
 
   get isPaused() {
     return this._audioElement.paused;
-  },
-
-  get hasStartedLoading() {
-    return this._audioElement
   },
 
   get buffered() {
@@ -114,19 +113,22 @@ AudioSource.prototype = {
     resolve(evt);
   },
 
-  _onPlayError(reject, evt) {
+  // jshint unused: false
+  _onPlayError(reject, _evt) {
     var src = this.src || 'src is not defined';
     this.off(`${this.playResolvesOn}._play`);
     this.pause();
     reject(new Error(`Could not play src: ${src}.`));
   },
 
-  _onPauseError(reject, evt) {
+  // jshint unused: false
+  _onPauseError(reject, _evt) {
     this.off('pause._pause');
     reject(new Error(`There was an error while pausing src: ${this.src}.`));
   },
 
-  _onLoadError(resolve, evt) {
+  // jshint unused: false
+  _onLoadError(reject, _evt) {
     this.off(`${this.loadResolvesOn}._load`);
     reject(new Error(`There was an error while loading src: ${this.src}.`));
   }
